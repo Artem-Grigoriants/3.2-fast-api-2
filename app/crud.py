@@ -35,11 +35,6 @@ def search_advertisements(db: Session, title: str = None, author: str = None):
     if title:
         query = query.filter(models.Advertisement.title.ilike(f"%{title}%"))
     if author:
-        # ВНИМАНИЕ: Если author теперь это связь через user_id, то поиск по имени автора
-        # должен выглядеть как join с таблицей User.
-        # Если в модели Advertisement поле author осталось как строка, этот код сработает.
-        # Если author теперь relationship, нужно делать так:
-        # query = query.join(models.User).filter(models.User.username.ilike(f"%{author}%"))
         query = query.filter(models.Advertisement.author.ilike(f"%{author}%"))
     return query.all()
 
@@ -71,8 +66,7 @@ def create_user(db: Session, user: schemas.UserCreate, hashed_password: str):
     return db_user
 
 
-def update_user(db: Session, user_id: int, user_data: schemas.UserCreate):
-    # Обратите внимание: здесь используется UserCreate, но для обновления часто создают отдельную схему UserUpdate
+def update_user(db: Session, user_id: int, user_data: schemas.UserUpdate): #Исправлено
     db.query(models.User).filter(models.User.id == user_id).update(user_data.model_dump(exclude_unset=True))
     db.commit()
     return get_user(db, user_id)

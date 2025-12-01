@@ -81,7 +81,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 @app.patch("/user/{user_id}", response_model=schemas.UserResponse)
 def update_user(
         user_id: int,
-        user_update: schemas.UserUpdate,
+        user_update: schemas.UserUpdate, #Определили схему
         db: Session = Depends(get_db),
         current_user: User = Depends(auth.get_current_user)
 ):
@@ -91,8 +91,9 @@ def update_user(
     if current_user.id != user_id and current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Not enough permissions")
 
-    # Вызываем CRUD (нужно реализовать update_user в crud.py)
-    return crud.update_user(db, user_id, user_update)
+    # Вызываем CRUD
+    return crud.update_user(db, user_id, user_update)  # Исправлено в crud
+
 
 
 @app.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -183,7 +184,7 @@ def delete_ad(
 @app.get("/advertisement/", response_model=List[schemas.AdvertisementResponse])
 def search_ads(
         title: str = Query(None),
-        author: int = user_id,
+        author: str = Query(None), #Исправлено с int = user_id
         db: Session = Depends(get_db)
 ):
     return crud.search_advertisements(db, title, author)
