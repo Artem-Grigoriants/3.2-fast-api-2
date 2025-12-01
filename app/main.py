@@ -2,7 +2,6 @@ from fastapi import FastAPI, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List
 
-# Импорты твоих модулей
 from . import models, schemas, crud, database, auth
 from .database import engine
 from .models import User, Advertisement
@@ -51,13 +50,18 @@ def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     1. Проверить, нет ли уже такого юзера.
-    2. Захэшировать пароль.
-    3. Сохранить.
+    2. ПРОВЕРИТЬ, ЧТО НЕ ПЫТАЮТСЯ СОЗДАТЬ АДМИНА.
+    3. Захэшировать пароль.
+    4. Сохранить.
     """
     db_user = crud.get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-
+    if user.role == "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Creating admin users is not allowed via public registration"
+        )
     # Хэшируем пароль перед отправкой в CRUD
     hashed_password = auth.hash_password(user.password)
 
@@ -179,7 +183,7 @@ def delete_ad(
 @app.get("/advertisement/", response_model=List[schemas.AdvertisementResponse])
 def search_ads(
         title: str = Query(None),
-        author: str = Query(None),
+        author: int = user_id,
         db: Session = Depends(get_db)
 ):
     return crud.search_advertisements(db, title, author)

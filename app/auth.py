@@ -7,8 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 # === КОНФИГУРАЦИЯ ===
-# В реальном проекте эти значения лучше хранить в .env файле
-SECRET_KEY = "my_super_secret_key_change_me"  # Замени на сложную случайную строку!
+SECRET_KEY = "SECRET FOR MY CODE"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 48  # Срок жизни токена
 
@@ -22,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # === 1. ХЭШИРОВАНИЕ И ПРОВЕРКА ПАРОЛЕЙ ===
 
-def get_password_hash(password: str) -> str:
+def hash_password(password: str) -> str:
     """Хэширует пароль перед сохранением в БД."""
     return pwd_context.hash(password)
 

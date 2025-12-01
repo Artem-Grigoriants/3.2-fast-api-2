@@ -2,7 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from app.database import get_db
+#from app.database import get_db
 
 Base = declarative_base()
 
@@ -29,6 +29,9 @@ class Advertisement(Base):
 
     # Ссылка на id пользователя (ForeignKey)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-
     # Связь для удобного доступа к объекту пользователя (ad.user)
     user = relationship("User", back_populates="advertisements")
+    @property
+    def author(self):
+        # Возвращаем username связанного пользователя
+        return self.user.username

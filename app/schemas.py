@@ -8,6 +8,11 @@ class UserBase(BaseModel):
     username: str
     role: str = "user"  # По дефолту обычный юзер, можно менять на 'admin'
 
+# отсутствующая схема login
+class UserLogin(BaseModel):  # Эта схема не определена, используется в main.py
+    username: str
+    password: str
+
 class UserCreate(UserBase):
     password: str
 
@@ -33,7 +38,7 @@ class Token(BaseModel):
 class AdvertisementBase(BaseModel):
     title: str
     description: str
-    price: float
+    price: int
 
 class AdvertisementCreate(AdvertisementBase):
     # Здесь нет поля author, так как автор проставляется автоматически из токена
@@ -48,7 +53,7 @@ class AdvertisementUpdate(BaseModel):
 class AdvertisementResponse(AdvertisementBase):
     id: int
     created_at: datetime
-    author: str  # Здесь мы будем возвращать имя автора (username)
+    author: str  # Здесь мы будем возвращать имя автора (username) из @property в models.py
 
     class Config:
         from_attributes = True
